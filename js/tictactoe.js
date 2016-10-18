@@ -83,8 +83,8 @@ var TicTacToe = function(options) {
 		return false;
 	};
 
-	var canUpdate = function(slot) {
-		return checker[getSlot(slot)].value;
+	var canUpdate = function(slotIndex) {
+		return checker[slotIndex].value;
 	};
 
 	var getSlotOwner = function(slot) {
@@ -166,20 +166,18 @@ var TicTacToe = function(options) {
 		settings.logo.cross.removeClass(settings.logo.activeClass);
 	};
 
-	var updateSlot = function(slot) {
-		if (!hasSomeoneWon() && isYourTurn() && canUpdate(slot)) {
-			checker[getSlot(slot)].value = false;
-			checker[getSlot(slot)].owner = player;
-			markSlot(slot, checker[getSlot(slot)].owner);
-			updateGameHistory(player);
-			updateTurnNotice(getWhoseTurn());
-			switchUser();
-		}
+	var updateSlot = function(slotIndex) {
+		checker[slotIndex].value = false;
+		checker[slotIndex].owner = player;
+		markSlot(slotIndex, checker[slotIndex].owner);
+		updateGameHistory(player);
+		updateTurnNotice(getWhoseTurn());
+		switchUser();
 	};
 
-	var markSlot = function(slot, owner) {
+	var markSlot = function(slotIndex, owner) {
 		settings.checkerSlot
-			.eq(getSlot(slot))
+			.eq(slotIndex)
 			.addClass(settings.player[owner].className);
 	};
 
@@ -196,7 +194,10 @@ var TicTacToe = function(options) {
 	};
 
 	settings.checkerSlot.on('click', function() {
-		updateSlot($(this));
+		var slotIndex = getSlot($(this));
+		if (!hasSomeoneWon() && isYourTurn() && canUpdate(slotIndex)) {
+			updateSlot(slotIndex);
+		}
 		var winner = hasSomeoneWon();
 		if (winner) {
 			highlightWinner(winner.pattern);
